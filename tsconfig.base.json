@@ -18,7 +18,8 @@
     "declarationMap": true,
     "sourceMap": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "exclude": [
     "node_modules",

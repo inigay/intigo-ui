@@ -1,2 +1,17 @@
 import { defineConfig } from 'vitest/config';
-export default defineConfig({ test: { environment: 'jsdom' } });
+import path from 'path';
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: [],
+    include: ['src/**/*.test.{ts,tsx}'],
+  },
+  resolve: {
+    alias: {
+      '@intigo-ui/web': path.resolve(__dirname, './src/index.ts'),
+      '@intigo-ui/headless': path.resolve(__dirname, '../headless/src/index.ts'),
+    },
+  },
+});

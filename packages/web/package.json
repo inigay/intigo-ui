@@ -13,14 +13,11 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@intigo-ui/headless": "workspace:*",
-    "@intigo-ui/tokens": "workspace:*",
-    "@intigo-ui/utils": "workspace:*",
-    "@intigo-ui/motion": "workspace:*"
+    "@intigo-ui/headless": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/react": "^14.2.0",

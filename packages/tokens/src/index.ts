@@ -1,1 +1,2 @@
-// Design tokens — see PR 2 for implementation
+export { tokens } from './tokens';
+export type { TokenColor, TokenSpacing, TokenRadius, TokenFontSize, TokenMotion, TokenShadow } from './tokens';
