@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import { Button } from '../Button';
 
 describe('Button', () => {
@@ -140,5 +141,52 @@ describe('Button', () => {
       </Button.Root>
     );
     expect(screen.getByTestId('primary-btn')).toBeInTheDocument();
+  });
+
+  it('sets data-state="loading" when loading', () => {
+    render(
+      <Button.Root loading>
+        <Button.Label>Loading</Button.Label>
+      </Button.Root>
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('data-state', 'loading');
+  });
+
+  it('sets data-state="disabled" when disabled', () => {
+    render(
+      <Button.Root disabled>
+        <Button.Label>Disabled</Button.Label>
+      </Button.Root>
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('data-state', 'disabled');
+  });
+
+  it('sets data-state="idle" by default', () => {
+    render(
+      <Button.Root>
+        <Button.Label>Click</Button.Label>
+      </Button.Root>
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('data-state', 'idle');
+  });
+
+  it('displays spinner when loading', () => {
+    render(
+      <Button.Root loading>
+        <Button.Label>Saving</Button.Label>
+      </Button.Root>
+    );
+    const spinner = screen.getByRole('button').querySelector('svg[viewBox="0 0 24 24"]');
+    expect(spinner).not.toBeNull();
+  });
+
+  it('hides children content when loading', () => {
+    render(
+      <Button.Root loading>
+        <Button.Label>Saving</Button.Label>
+      </Button.Root>
+    );
+    const contentSpan = screen.getByText('Saving').parentElement;
+    expect(contentSpan).toHaveStyle({ opacity: '0' });
   });
 });

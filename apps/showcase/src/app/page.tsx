@@ -110,6 +110,8 @@ export default function ShowcasePage() {
   const [checked, setChecked] = useState(false);
   const [swChecked, setSwChecked] = useState(false);
   const [email, setEmail] = useState('');
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [btnLoading2, setBtnLoading2] = useState(false);
 
   const selectOptions = [
     { label: 'React', value: 'react' },
@@ -134,7 +136,7 @@ export default function ShowcasePage() {
         {/* Button */}
         <section style={sectionStyle}>
           <h2 style={headingStyle}>Button</h2>
-          <p style={descStyle}>6 variants, 5 sizes, loading state, icon slots.</p>
+          <p style={descStyle}>6 variants, 5 sizes, loading & disabled states, icon slots, hover/focus/active animations.</p>
           <div style={{ marginBottom: '16px' }}>
             <div style={labelStyle}>Variants</div>
             <div style={gridStyle}>
@@ -156,13 +158,44 @@ export default function ShowcasePage() {
               <Button.Root size="xl"><Button.Label>XL</Button.Label></Button.Root>
             </div>
           </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>States</div>
+            <div style={gridStyle}>
+              <Button.Root disabled><Button.Label>Disabled</Button.Label></Button.Root>
+              <Button.Root variant="primary" disabled><Button.Label>Disabled Primary</Button.Label></Button.Root>
+              <Button.Root variant="outline" disabled><Button.Label>Disabled Outline</Button.Label></Button.Root>
+              <Button.Root variant="destructive" disabled><Button.Label>Disabled Destructive</Button.Label></Button.Root>
+            </div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>Loading (auto-spinner, content fades out)</div>
+            <div style={gridStyle}>
+              <Button.Root loading><Button.Label>Loading</Button.Label></Button.Root>
+              <Button.Root variant="primary" loading><Button.Label>Saving…</Button.Label></Button.Root>
+              <Button.Root variant="outline" loading><Button.Label>Loading</Button.Label></Button.Root>
+              <Button.Root variant="destructive" loading><Button.Label>Deleting…</Button.Label></Button.Root>
+              <Button.Root variant="secondary" loading><Button.Label>Processing…</Button.Label></Button.Root>
+            </div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>Loading → Idle (interactive demo — click to toggle)</div>
+            <div style={gridStyle}>
+              <Button.Root loading={btnLoading} onPress={() => setBtnLoading(v => !v)}>
+                <Button.Label>{btnLoading ? 'Loading…' : 'Click to Load'}</Button.Label>
+              </Button.Root>
+              <Button.Root variant="primary" loading={btnLoading2} onPress={() => setBtnLoading2(v => !v)}>
+                <Button.Icon position="left"><span>💾</span></Button.Icon>
+                <Button.Label>{btnLoading2 ? 'Saving…' : 'Save Changes'}</Button.Label>
+              </Button.Root>
+            </div>
+          </div>
           <div style={gridStyle}>
-            <Button.Root loading><Button.Label>Loading</Button.Label></Button.Root>
-            <Button.Root disabled><Button.Label>Disabled</Button.Label></Button.Root>
             <Button.Root>
               <Button.Icon position="left"><span>+</span></Button.Icon>
               <Button.Label>With Icon</Button.Label>
             </Button.Root>
+            <Button.Root variant="outline" size="sm" rounded="pill"><Button.Label>Pill</Button.Label></Button.Root>
+            <Button.Root variant="ghost" rounded="none"><Button.Label>Square</Button.Label></Button.Root>
           </div>
         </section>
 

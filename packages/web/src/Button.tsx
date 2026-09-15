@@ -1,15 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useButton } from '@intigo-ui/headless';
 import { tokens } from '@intigo-ui/tokens';
+import { easings } from '@intigo-ui/motion';
 
-// Styles map
-const variantStyles: Record<string, React.CSSProperties> = {
-  primary: { background: tokens.color.primary[500], color: '#fff' },
-  secondary: { background: tokens.color.gray[100], color: tokens.color.gray[900] },
-  outline: { background: 'transparent', color: tokens.color.primary[500], border: `1px solid ${tokens.color.primary[500]}` },
-  ghost: { background: 'transparent', color: tokens.color.gray[700] },
-  destructive: { background: tokens.color.destructive, color: '#fff' },
-  link: { background: 'transparent', color: tokens.color.primary[500] },
+// ── Variant style definitions (base + hover + active) ──
+interface VariantStyle {
+  base: React.CSSProperties;
+  hover: React.CSSProperties;
+  active: React.CSSProperties;
+}
+
+const variantStyles: Record<string, VariantStyle> = {
+  primary: {
+    base: { background: tokens.color.primary[500], color: '#fff', border: 'none' },
+    hover: { background: tokens.color.primary[600] },
+    active: { background: tokens.color.primary[700] },
+  },
+  secondary: {
+    base: { background: tokens.color.gray[100], color: tokens.color.gray[900], border: 'none' },
+    hover: { background: tokens.color.gray[200] },
+    active: { background: tokens.color.gray[300] },
+  },
+  outline: {
+    base: { background: 'transparent', color: tokens.color.primary[500], border: `1px solid ${tokens.color.primary[500]}` },
+    hover: { background: `${tokens.color.primary[500]}18` },
+    active: { background: `${tokens.color.primary[500]}30` },
+  },
+  ghost: {
+    base: { background: 'transparent', color: tokens.color.gray[700], border: 'none' },
+    hover: { background: `${tokens.color.gray[300]}40`, color: tokens.color.gray[900] },
+    active: { background: `${tokens.color.gray[300]}60` },
+  },
+  destructive: {
+    base: { background: tokens.color.destructive, color: '#fff', border: 'none' },
+    hover: { filter: 'brightness(1.1)' },
+    active: { filter: 'brightness(0.9)' },
+  },
+  link: {
+    base: { background: 'transparent', color: tokens.color.primary[500], border: 'none' },
+    hover: { textDecoration: 'underline' },
+    active: { color: tokens.color.primary[700] },
+  },
 };
 
 const sizeStyles: Record<string, React.CSSProperties> = {
@@ -19,6 +50,29 @@ const sizeStyles: Record<string, React.CSSProperties> = {
   lg: { height: '48px', padding: '0 24px', fontSize: tokens.fontSize.base, borderRadius: tokens.radius.md },
   xl: { height: '56px', padding: '0 32px', fontSize: tokens.fontSize.lg, borderRadius: tokens.radius.lg },
 };
+
+// ── CSS for states & animations ──
+const buttonStatesKeyframes = `
+@keyframes intigo-spinner-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes intigo-fade-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes intigo-content-fade-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}
+`;
+
+// Inject keyframes once
+if (typeof document !== 'undefined' && !document.getElementById('intigo-btn-keyframes')) {
+  const styleEl = document.createElement('style');
+  styleEl.id = 'intigo-btn-keyframes';
+  styleEl.textContent = buttonStatesKeyframes;
+  document.head.appendChild(styleEl);
+}
 
 export interface ButtonRootProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link';
@@ -35,37 +89,142 @@ export interface ButtonRootProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
 export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
   ({ children, variant = 'primary', size = 'md', loading = false, disabled = false, fullWidth = false, rounded = 'default', onPress, type = 'button', 'aria-label': ariaLabel, style, className, ...rest }, ref) => {
     const { buttonProps } = useButton({ disabled, loading, type, onPress, ariaLabel });
+    const [hovered, setHovered] = useState(false);
+    const [pressed, setPressed] = useState(false);
+    const [focusVisible, setFocusVisible] = useState(false);
+    const [hasJustLoaded, setHasJustLoaded] = useState(false);
+
+    // Detect transition from loading → not loading for exit animation
+    useEffect(() => {
+      if (!loading) {
+        setHasJustLoaded(true);
+        const t = setTimeout(() => setHasJustLoaded(false), 300);
+        return () => clearTimeout(t);
+      }
+    }, [loading]);
 
     const borderRadius = rounded === 'pill' ? tokens.radius.full : rounded === 'none' ? '0' : sizeStyles[size].borderRadius;
+    const isDisabled = disabled || loading;
+    const vStyles = variantStyles[variant];
+
+    const isClickable = !isDisabled;
+
+    const compositeStyle: React.CSSProperties = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      fontFamily: 'inherit',
+      fontWeight: 500,
+      border: vStyles.base.border || 'none',
+      cursor: disabled ? 'not-allowed' : loading ? 'progress' : 'pointer',
+      transition: `all 200ms ${easings.snappy}`,
+      whiteSpace: 'nowrap',
+      outline: 'none',
+      position: 'relative',
+      // Base variant styles
+      ...vStyles.base,
+      ...sizeStyles[size],
+      borderRadius,
+      ...(fullWidth ? { width: '100%' } : {}),
+
+      // ── Hover state (only when clickable) ──
+      ...(isClickable && hovered ? vStyles.hover : {}),
+
+      // ── Active/pressed state (only when clickable) ──
+      ...(isClickable && pressed ? {
+        ...vStyles.active,
+        transform: 'scale(0.97)',
+      } : {}),
+
+      // ── Focus ring ──
+      ...(focusVisible ? {
+        boxShadow: `0 0 0 2px ${tokens.color.primary[500]}40, 0 0 0 4px ${tokens.color.primary[500]}`,
+      } : {}),
+
+      // ── Disabled state ──
+      ...(disabled && !loading ? {
+        opacity: 0.4,
+        filter: 'grayscale(0.3)',
+      } : {}),
+
+      // ── Loading state ──
+      ...(loading ? {
+        opacity: 0.85,
+        pointerEvents: 'none' as const,
+        filter: 'none',
+      } : {}),
+
+      ...style,
+    };
 
     return (
       <button
         ref={ref}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          fontFamily: 'inherit',
-          fontWeight: 500,
-          border: variantStyles[variant].border || 'none',
-          cursor: disabled || loading ? 'not-allowed' : 'pointer',
-          transition: 'all 150ms cubic-bezier(0.16, 1, 0.3, 1)',
-          whiteSpace: 'nowrap',
-          outline: 'none',
-          ...variantStyles[variant],
-          ...sizeStyles[size],
-          borderRadius,
-          ...(fullWidth ? { width: '100%' } : {}),
-          ...(loading || disabled ? { opacity: 0.5 } : {}),
-          ...style,
-        }}
+        style={compositeStyle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => { setHovered(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        onFocus={(e) => { if (e.currentTarget.matches(':focus-visible')) setFocusVisible(true); }}
+        onBlur={() => setFocusVisible(false)}
         {...buttonProps}
         {...rest}
         data-variant={variant}
         data-size={size}
+        data-state={disabled ? 'disabled' : loading ? 'loading' : 'idle'}
       >
-        {children}
+        {/* Loading spinner + content swap */}
+        {loading && (
+          <span style={{
+            position: 'absolute',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'intigo-fade-in 200ms ease-out forwards',
+          }}>
+            <svg
+              style={{
+                animation: 'intigo-spinner-spin 0.8s linear infinite',
+                width: size === 'xs' ? 12 : size === 'sm' ? 14 : 16,
+                height: size === 'xs' ? 12 : size === 'sm' ? 14 : 16,
+              }}
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                cx="12" cy="12" r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray="31.4 31.4"
+                opacity="0.6"
+              />
+              <circle
+                cx="12" cy="12" r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray="31.4 31.4"
+                strokeDashoffset="-15.7"
+                opacity="0.3"
+                style={{ animation: 'intigo-spinner-spin 0.5s linear infinite reverse' }}
+              />
+            </svg>
+          </span>
+        )}
+
+        {/* Children content with fade during loading transitions */}
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          transition: 'opacity 150ms ease, transform 150ms ease',
+          ...(loading ? { opacity: 0, transform: 'scale(0.95)', pointerEvents: 'none' as const } : {}),
+          ...(hasJustLoaded ? { animation: 'intigo-fade-in 250ms ease-out forwards' } : {}),
+        }}>
+          {children}
+        </span>
       </button>
     );
   }
