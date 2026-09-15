@@ -19,18 +19,18 @@ function ToastDemo() {
   const { toast } = useToastContext();
   return (
     <div style={gridStyle}>
-      <Button.Root variant="primary" onPress={() => toast({ title: 'Success!', description: 'Action completed', variant: 'success' })}>
-        <Button.Label>Success Toast</Button.Label>
-      </Button.Root>
-      <Button.Root variant="destructive" onPress={() => toast({ title: 'Error', description: 'Something went wrong', variant: 'error' })}>
-        <Button.Label>Error Toast</Button.Label>
-      </Button.Root>
-      <Button.Root variant="outline" onPress={() => toast({ title: 'Warning', description: 'Check this out', variant: 'warning' })}>
-        <Button.Label>Warning Toast</Button.Label>
-      </Button.Root>
-      <Button.Root onPress={() => toast({ title: 'Info', description: 'Just letting you know', variant: 'info' })}>
-        <Button.Label>Info Toast</Button.Label>
-      </Button.Root>
+      <Button variant="primary" onPress={() => toast({ title: 'Success!', description: 'Action completed', variant: 'success' })}>
+        Success Toast
+      </Button>
+      <Button variant="destructive" onPress={() => toast({ title: 'Error', description: 'Something went wrong', variant: 'error' })}>
+        Error Toast
+      </Button>
+      <Button variant="outline" onPress={() => toast({ title: 'Warning', description: 'Check this out', variant: 'warning' })}>
+        Warning Toast
+      </Button>
+      <Button onPress={() => toast({ title: 'Info', description: 'Just letting you know', variant: 'info' })}>
+        Info Toast
+      </Button>
     </div>
   );
 }
@@ -39,9 +39,7 @@ function DialogDemo() {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <Button.Root onPress={() => setOpen(true)}>
-        <Button.Label>Open Dialog</Button.Label>
-      </Button.Root>
+      <Button onPress={() => setOpen(true)}>Open Dialog</Button>
       <Dialog.Root open={open} onOpenChange={setOpen} size="md">
         <Dialog.Header>
           <Dialog.Title>Edit Profile</Dialog.Title>
@@ -53,12 +51,8 @@ function DialogDemo() {
           </p>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button.Root variant="outline" onPress={() => setOpen(false)}>
-            <Button.Label>Cancel</Button.Label>
-          </Button.Root>
-          <Button.Root onPress={() => setOpen(false)}>
-            <Button.Label>Save changes</Button.Label>
-          </Button.Root>
+          <Button variant="outline" onPress={() => setOpen(false)}>Cancel</Button>
+          <Button onPress={() => setOpen(false)}>Save changes</Button>
         </Dialog.Footer>
       </Dialog.Root>
     </div>
@@ -110,6 +104,8 @@ export default function ShowcasePage() {
   const [checked, setChecked] = useState(false);
   const [swChecked, setSwChecked] = useState(false);
   const [email, setEmail] = useState('');
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [btnLoading2, setBtnLoading2] = useState(false);
 
   const selectOptions = [
     { label: 'React', value: 'react' },
@@ -134,35 +130,62 @@ export default function ShowcasePage() {
         {/* Button */}
         <section style={sectionStyle}>
           <h2 style={headingStyle}>Button</h2>
-          <p style={descStyle}>6 variants, 5 sizes, loading state, icon slots.</p>
+          <p style={descStyle}>6 variants, 5 sizes, loading & disabled states, icon support, hover/focus/active animations.</p>
           <div style={{ marginBottom: '16px' }}>
             <div style={labelStyle}>Variants</div>
             <div style={gridStyle}>
-              <Button.Root variant="primary"><Button.Label>Primary</Button.Label></Button.Root>
-              <Button.Root variant="secondary"><Button.Label>Secondary</Button.Label></Button.Root>
-              <Button.Root variant="outline"><Button.Label>Outline</Button.Label></Button.Root>
-              <Button.Root variant="ghost"><Button.Label>Ghost</Button.Label></Button.Root>
-              <Button.Root variant="destructive"><Button.Label>Destructive</Button.Label></Button.Root>
-              <Button.Root variant="link"><Button.Label>Link</Button.Label></Button.Root>
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="link">Link</Button>
             </div>
           </div>
           <div style={{ marginBottom: '16px' }}>
             <div style={labelStyle}>Sizes</div>
             <div style={{ ...gridStyle, alignItems: 'center' }}>
-              <Button.Root size="xs"><Button.Label>XS</Button.Label></Button.Root>
-              <Button.Root size="sm"><Button.Label>Small</Button.Label></Button.Root>
-              <Button.Root size="md"><Button.Label>Medium</Button.Label></Button.Root>
-              <Button.Root size="lg"><Button.Label>Large</Button.Label></Button.Root>
-              <Button.Root size="xl"><Button.Label>XL</Button.Label></Button.Root>
+              <Button size="xs">XS</Button>
+              <Button size="sm">Small</Button>
+              <Button size="md">Medium</Button>
+              <Button size="lg">Large</Button>
+              <Button size="xl">XL</Button>
+            </div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>States</div>
+            <div style={gridStyle}>
+              <Button disabled>Disabled</Button>
+              <Button variant="primary" disabled>Disabled Primary</Button>
+              <Button variant="outline" disabled>Disabled Outline</Button>
+              <Button variant="destructive" disabled>Disabled Destructive</Button>
+            </div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>Loading (auto-spinner, content fades out)</div>
+            <div style={gridStyle}>
+              <Button loading>Loading</Button>
+              <Button variant="primary" loading>Saving…</Button>
+              <Button variant="outline" loading>Loading</Button>
+              <Button variant="destructive" loading>Deleting…</Button>
+              <Button variant="secondary" loading>Processing…</Button>
+            </div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={labelStyle}>Loading → Idle (interactive demo — click to toggle)</div>
+            <div style={gridStyle}>
+              <Button loading={btnLoading} onPress={() => setBtnLoading(v => !v)}>
+                {btnLoading ? 'Loading…' : 'Click to Load'}
+              </Button>
+              <Button variant="primary" loading={btnLoading2} onPress={() => setBtnLoading2(v => !v)} icon={<span>💾</span>}>
+                {btnLoading2 ? 'Saving…' : 'Save Changes'}
+              </Button>
             </div>
           </div>
           <div style={gridStyle}>
-            <Button.Root loading><Button.Label>Loading</Button.Label></Button.Root>
-            <Button.Root disabled><Button.Label>Disabled</Button.Label></Button.Root>
-            <Button.Root>
-              <Button.Icon position="left"><span>+</span></Button.Icon>
-              <Button.Label>With Icon</Button.Label>
-            </Button.Root>
+            <Button icon={<span>+</span>}>With Icon</Button>
+            <Button variant="outline" size="sm" rounded="pill">Pill</Button>
+            <Button variant="ghost" rounded="none">Square</Button>
           </div>
         </section>
 
@@ -289,7 +312,7 @@ export default function ShowcasePage() {
                 </p>
               </Card.Body>
               <Card.Footer>
-                <Button.Root fullWidth size="sm"><Button.Label>Subscribe</Button.Label></Button.Root>
+                <Button fullWidth size="sm">Subscribe</Button>
               </Card.Footer>
             </Card.Root>
             <Card.Root variant="outlined" style={{ width: '280px' }}>

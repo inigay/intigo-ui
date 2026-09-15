@@ -12,6 +12,7 @@ export default defineConfig({
     alias: {
       '@intigo-ui/web': path.resolve(__dirname, './src/index.ts'),
       '@intigo-ui/headless': path.resolve(__dirname, '../headless/src/index.ts'),
+      '@intigo-ui/motion': path.resolve(__dirname, '../motion/src/index.ts'),
     },
   },
 });

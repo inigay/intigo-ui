@@ -1,5 +1,6 @@
 // @intigo-ui/web — Component Library
 export { Button } from './Button';
+export type { ButtonProps } from './Button';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Dialog } from './Dialog';
