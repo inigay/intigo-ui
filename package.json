@@ -1,0 +1,23 @@
+{
+  "name": "intigo-ui",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "showcase": "npm run dev -w apps/showcase"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "vitest": "^1.6.0",
+    "typescript": "^5.4.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

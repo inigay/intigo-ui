@@ -1,0 +1,30 @@
+{
+  "name": "@intigo-ui/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@intigo-ui/headless": "workspace:*"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.2.0",
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/user-event": "^14.5.0",
+    "jsdom": "^24.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}
