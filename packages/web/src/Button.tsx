@@ -19,7 +19,7 @@ const variantStyles: Record<string, VariantStyle> = {
   secondary: {
     base: { background: tokens.color.gray[100], color: tokens.color.gray[900], border: 'none' },
     hover: { background: tokens.color.gray[200] },
-    active: { background: tokens.color.gray[300] },
+    active: { background: tokens.color.gray[500] },
   },
   outline: {
     base: { background: 'transparent', color: tokens.color.primary[500], border: `1px solid ${tokens.color.primary[500]}` },
@@ -28,8 +28,8 @@ const variantStyles: Record<string, VariantStyle> = {
   },
   ghost: {
     base: { background: 'transparent', color: tokens.color.gray[700], border: 'none' },
-    hover: { background: `${tokens.color.gray[300]}40`, color: tokens.color.gray[900] },
-    active: { background: `${tokens.color.gray[300]}60` },
+    hover: { background: `${tokens.color.gray[200]}40`, color: tokens.color.gray[900] },
+    active: { background: `${tokens.color.gray[200]}60` },
   },
   destructive: {
     base: { background: tokens.color.destructive, color: '#fff', border: 'none' },
