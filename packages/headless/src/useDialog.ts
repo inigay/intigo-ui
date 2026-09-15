@@ -48,30 +48,41 @@ export function useDialog(options: UseDialogOptions = {}): UseDialogReturn {
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
 
+  // Escape key handler
   useEffect(() => {
     if (!isOpen || !closeOnEscape) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, closeOnEscape, close]);
 
+  // Save trigger ref on open, focus first element
   useEffect(() => {
     if (isOpen) {
       triggerRef.current = document.activeElement as HTMLElement;
       const el = contentRef.current;
       if (el) {
-        const focusable = el.querySelector<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        const focusable = el.querySelector<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
         focusable?.focus();
       }
     }
   }, [isOpen]);
 
+  // Restore focus on close
   useEffect(() => {
-    if (!isOpen && triggerRef.current) { triggerRef.current.focus(); }
+    if (!isOpen && triggerRef.current) {
+      triggerRef.current.focus();
+    }
   }, [isOpen]);
 
+  // Scroll lock
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
@@ -88,8 +99,11 @@ export function useDialog(options: UseDialogOptions = {}): UseDialogReturn {
         : undefined,
     }),
     getContentProps: () => ({
-      ref: contentRef, role: 'dialog', 'aria-modal': modal,
-      'aria-labelledby': titleId, 'aria-describedby': descId,
+      ref: contentRef,
+      role: 'dialog',
+      'aria-modal': modal,
+      'aria-labelledby': titleId,
+      'aria-describedby': descId,
     }),
     getTitleProps: () => ({ id: titleId }),
     getDescriptionProps: () => ({ id: descId }),
