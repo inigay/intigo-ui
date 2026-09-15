@@ -51,7 +51,7 @@ const sizeStyles: Record<string, React.CSSProperties> = {
   xl: { height: '56px', padding: '0 32px', fontSize: tokens.fontSize.lg, borderRadius: tokens.radius.lg },
 };
 
-// ── CSS for states & animations ──
+// ── CSS keyframes ──
 const buttonStatesKeyframes = `
 @keyframes intigo-spinner-spin {
   to { transform: rotate(360deg); }
@@ -59,10 +59,6 @@ const buttonStatesKeyframes = `
 @keyframes intigo-fade-in {
   from { opacity: 0; transform: scale(0.7); }
   to { opacity: 1; transform: scale(1); }
-}
-@keyframes intigo-content-fade-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.95); }
 }
 `;
 
@@ -74,7 +70,7 @@ if (typeof document !== 'undefined' && !document.getElementById('intigo-btn-keyf
   document.head.appendChild(styleEl);
 }
 
-export interface ButtonRootProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
+export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   loading?: boolean;
@@ -83,12 +79,13 @@ export interface ButtonRootProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
   rounded?: 'default' | 'pill' | 'none';
   onPress?: () => void;
   type?: 'button' | 'submit' | 'reset';
-  'aria-label'?: string;
+  /** Icon element rendered before the label */
+  icon?: React.ReactNode;
 }
 
-export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
-  ({ children, variant = 'primary', size = 'md', loading = false, disabled = false, fullWidth = false, rounded = 'default', onPress, type = 'button', 'aria-label': ariaLabel, style, className, ...rest }, ref) => {
-    const { buttonProps } = useButton({ disabled, loading, type, onPress, ariaLabel });
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ children, variant = 'primary', size = 'md', loading = false, disabled = false, fullWidth = false, rounded = 'default', onPress, type = 'button', icon, style, className, ...rest }, ref) => {
+    const { buttonProps } = useButton({ disabled, loading, type, onPress, ariaLabel: rest['aria-label'] });
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);
     const [focusVisible, setFocusVisible] = useState(false);
@@ -106,8 +103,9 @@ export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
     const borderRadius = rounded === 'pill' ? tokens.radius.full : rounded === 'none' ? '0' : sizeStyles[size].borderRadius;
     const isDisabled = disabled || loading;
     const vStyles = variantStyles[variant];
-
     const isClickable = !isDisabled;
+
+    const spinnerSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
 
     const compositeStyle: React.CSSProperties = {
       display: 'inline-flex',
@@ -122,46 +120,45 @@ export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
       whiteSpace: 'nowrap',
       outline: 'none',
       position: 'relative',
-      // Base variant styles
       ...vStyles.base,
       ...sizeStyles[size],
       borderRadius,
       ...(fullWidth ? { width: '100%' } : {}),
 
-      // ── Hover state (only when clickable) ──
+      // Hover
       ...(isClickable && hovered ? vStyles.hover : {}),
 
-      // ── Active/pressed state (only when clickable) ──
-      ...(isClickable && pressed ? {
-        ...vStyles.active,
-        transform: 'scale(0.97)',
-      } : {}),
+      // Active/pressed
+      ...(isClickable && pressed ? { ...vStyles.active, transform: 'scale(0.97)' } : {}),
 
-      // ── Focus ring ──
+      // Focus ring
       ...(focusVisible ? {
         boxShadow: `0 0 0 2px ${tokens.color.primary[500]}40, 0 0 0 4px ${tokens.color.primary[500]}`,
       } : {}),
 
-      // ── Disabled state ──
-      ...(disabled && !loading ? {
-        opacity: 0.4,
-        filter: 'grayscale(0.3)',
-      } : {}),
+      // Disabled
+      ...(disabled && !loading ? { opacity: 0.4, filter: 'grayscale(0.3)' } : {}),
 
-      // ── Loading state ──
-      ...(loading ? {
-        opacity: 0.85,
-        pointerEvents: 'none' as const,
-        filter: 'none',
-      } : {}),
+      // Loading
+      ...(loading ? { opacity: 0.85, pointerEvents: 'none' as const, filter: 'none' } : {}),
 
       ...style,
+    };
+
+    const contentStyle: React.CSSProperties = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      transition: 'opacity 150ms ease, transform 150ms ease',
+      ...(loading ? { opacity: 0, transform: 'scale(0.95)', pointerEvents: 'none' as const } : {}),
+      ...(hasJustLoaded ? { animation: 'intigo-fade-in 250ms ease-out forwards' } : {}),
     };
 
     return (
       <button
         ref={ref}
         style={compositeStyle}
+        className={className}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); setPressed(false); }}
         onMouseDown={() => setPressed(true)}
@@ -174,92 +171,30 @@ export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
         data-size={size}
         data-state={disabled ? 'disabled' : loading ? 'loading' : 'idle'}
       >
-        {/* Loading spinner + content swap */}
+        {/* Spinner shown during loading */}
         {loading && (
-          <span style={{
-            position: 'absolute',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            animation: 'intigo-fade-in 200ms ease-out forwards',
-          }}>
-            <svg
-              style={{
-                animation: 'intigo-spinner-spin 0.8s linear infinite',
-                width: size === 'xs' ? 12 : size === 'sm' ? 14 : 16,
-                height: size === 'xs' ? 12 : size === 'sm' ? 14 : 16,
-              }}
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                cx="12" cy="12" r="10"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray="31.4 31.4"
-                opacity="0.6"
-              />
-              <circle
-                cx="12" cy="12" r="10"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray="31.4 31.4"
-                strokeDashoffset="-15.7"
-                opacity="0.3"
-                style={{ animation: 'intigo-spinner-spin 0.5s linear infinite reverse' }}
-              />
-            </svg>
-          </span>
+          <svg
+            style={{
+              position: 'absolute',
+              animation: 'intigo-spinner-spin 0.8s linear infinite',
+              width: spinnerSize,
+              height: spinnerSize,
+            }}
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.4 31.4" opacity="0.6" />
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.4 31.4" strokeDashoffset="-15.7" opacity="0.3" style={{ animation: 'intigo-spinner-spin 0.5s linear infinite reverse' }} />
+          </svg>
         )}
 
-        {/* Children content with fade during loading transitions */}
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          transition: 'opacity 150ms ease, transform 150ms ease',
-          ...(loading ? { opacity: 0, transform: 'scale(0.95)', pointerEvents: 'none' as const } : {}),
-          ...(hasJustLoaded ? { animation: 'intigo-fade-in 250ms ease-out forwards' } : {}),
-        }}>
+        {/* Icon + children */}
+        <span style={contentStyle}>
+          {icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>}
           {children}
         </span>
       </button>
     );
   }
 );
-ButtonRoot.displayName = 'ButtonRoot';
-
-export interface ButtonIconProps extends React.HTMLAttributes<HTMLSpanElement> {
-  position?: 'left' | 'right';
-}
-
-export const ButtonIcon = React.forwardRef<HTMLSpanElement, ButtonIconProps>(
-  ({ children, position = 'left', style, ...rest }, ref) => (
-    <span ref={ref} style={{ display: 'inline-flex', alignItems: 'center', order: position === 'right' ? 1 : -1, ...style }} {...rest}>
-      {children}
-    </span>
-  )
-);
-ButtonIcon.displayName = 'ButtonIcon';
-
-export const ButtonLabel = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(
-  ({ children, style, ...rest }, ref) => (
-    <span ref={ref} style={{ ...style }}>{children}</span>
-  )
-);
-ButtonLabel.displayName = 'ButtonLabel';
-
-export const ButtonSpinner = () => (
-  <svg style={{ animation: 'intigo-spin 1s linear infinite', width: 16, height: 16 }} viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.4 31.4" />
-  </svg>
-);
-
-export const Button = {
-  Root: ButtonRoot,
-  Icon: ButtonIcon,
-  Label: ButtonLabel,
-  Spinner: ButtonSpinner,
-};
+Button.displayName = 'Button';
