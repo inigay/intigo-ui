@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useButton } from '@intigo-ui/headless';
 import { tokens } from '@intigo-ui/tokens';
-import { easings } from '@intigo-ui/motion';
+
+// Snappy easing — same as easings.snappy from @intigo-ui/motion
+const EASING_SNAPPY = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 // ── Variant style definitions (base + hover + active) ──
 interface VariantStyle {
@@ -118,7 +120,7 @@ export const ButtonRoot = React.forwardRef<HTMLButtonElement, ButtonRootProps>(
       fontWeight: 500,
       border: vStyles.base.border || 'none',
       cursor: disabled ? 'not-allowed' : loading ? 'progress' : 'pointer',
-      transition: `all 200ms ${easings.snappy}`,
+      transition: `all 200ms ${EASING_SNAPPY}`,
       whiteSpace: 'nowrap',
       outline: 'none',
       position: 'relative',
