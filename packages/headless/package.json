@@ -16,7 +16,7 @@
     "react": "^18.0.0"
   },
   "dependencies": {
-    "@intigo-ui/utils": "workspace:*"
+    "@intigo-ui/utils": "*"
   },
   "devDependencies": {
     "@testing-library/react": "^14.2.0",

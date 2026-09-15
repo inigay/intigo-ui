@@ -17,7 +17,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@intigo-ui/headless": "workspace:*"
+    "@intigo-ui/headless": "*"
   },
   "devDependencies": {
     "@testing-library/react": "^14.2.0",

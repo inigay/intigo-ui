@@ -553,6 +553,13 @@ Components are organized by their interaction pattern, not by visual category:
 
 ---
 
+## Quick Start
+
+```bash
+npm install
+npm run showcase
+```
+
 ## License
 
 MIT © Intigo UI contributors
