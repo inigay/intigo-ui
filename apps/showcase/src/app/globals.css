@@ -1,0 +1,26 @@
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { background: #0a0a0a; color: #fafafa; }
+
+@keyframes intigo-spin { to { transform: rotate(360deg); } }
+@keyframes intigo-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes intigo-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes intigo-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intigo-dialog-scale { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes intigo-select-enter { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes intigo-toast-enter { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+.showcase-section { border-bottom: 1px solid #262626; padding: 32px 0; }
+.showcase-section:last-child { border-bottom: none; }
+.showcase-heading { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #fafafa; }
+.showcase-desc { font-size: 14px; color: #a1a1aa; margin-bottom: 20px; }
+.showcase-grid { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.showcase-label { font-size: 12px; color: #71717a; min-width: 60px; }
+.showcase-card { background: #171717; border: 1px solid #262626; border-radius: 12px; padding: 24px; }
