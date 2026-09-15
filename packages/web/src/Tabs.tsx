@@ -62,8 +62,8 @@ export const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
 );
 TabsList.displayName = 'TabsList';
 
-export const TabsTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string; badge?: number | string }>(
-  ({ value, badge, className, children, style, ...rest }, ref) => {
+export const TabsTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string; badge?: number | string; variant?: string }>(
+  ({ value, badge, variant, className, children, style, ...rest }, ref) => {
     const isSelected = (rest as any)['aria-selected'];
     return (
       <button ref={ref} style={{
